@@ -13,6 +13,23 @@ use Illuminate\Support\Str;
 class CompanyController extends Controller
 {
     /**
+     * GET /api/v1/companies
+     *
+     * List all companies with their default branch.
+     * Requires: auth:sanctum + super_admin role.
+     */
+    public function index(): JsonResponse
+    {
+        $companies = Company::with('branches', 'defaultBranch')
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'companies' => CompanyResource::collection($companies),
+        ]);
+    }
+
+    /**
      * POST /api/v1/companies
      *
      * Create a new company and its default branch.
