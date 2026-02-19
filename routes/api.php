@@ -55,6 +55,10 @@ Route::prefix('v1')->group(function () {
          ->name('companies.')
          ->group(function () {
 
+             // GET  /api/v1/companies
+             Route::get('/', [CompanyController::class, 'index'])
+                  ->name('index');
+
              // POST /api/v1/companies
              Route::post('/', [CompanyController::class, 'store'])
                   ->name('store');
