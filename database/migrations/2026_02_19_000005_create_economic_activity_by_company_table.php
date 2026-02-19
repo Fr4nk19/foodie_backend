@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Limpiar tabla rota de intentos anteriores fallidos
+        Schema::dropIfExists('economic_activity_by_company');
+
         Schema::create('economic_activity_by_company', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')
@@ -23,7 +26,11 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->unique(['company_id', 'cat_mhactividad_id', 'deleted_at']);
+            // Nombre corto para respetar límite de 64 chars de MySQL
+            $table->unique(
+                ['company_id', 'cat_mhactividad_id', 'deleted_at'],
+                'eabc_company_actividad_deleted_unique'
+            );
         });
     }
 
