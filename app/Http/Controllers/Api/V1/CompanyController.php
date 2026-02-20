@@ -8,6 +8,7 @@ use App\Http\Resources\Api\V1\CompanyResource;
 use App\Models\Branch;
 use App\Models\Company;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CompanyController extends Controller
@@ -15,17 +16,32 @@ class CompanyController extends Controller
     /**
      * GET /api/v1/companies
      *
-     * List all companies with their default branch.
+     * List companies with pagination.
+     * Query params:
+     *   - per_page: int (default 15, max 100)
+     *   - page:     int (default 1)
+     *
      * Requires: auth:sanctum + super_admin role.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $companies = Company::with('branches', 'defaultBranch')
+        $perPage = (int) $request->query('per_page', 15);
+        $perPage = min(max($perPage, 1), 100);
+
+        $paginator = Company::with('branches', 'defaultBranch')
             ->latest()
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
-            'companies' => CompanyResource::collection($companies),
+            'data' => CompanyResource::collection($paginator->items()),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'per_page'     => $paginator->perPage(),
+                'total'        => $paginator->total(),
+                'from'         => $paginator->firstItem() ?? 0,
+                'to'           => $paginator->lastItem()  ?? 0,
+            ],
         ]);
     }
 
