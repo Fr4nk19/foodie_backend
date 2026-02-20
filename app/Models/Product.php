@@ -8,34 +8,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Branch extends Model
+class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'company_id',
-        'name',
-        'address',
-        'city',
-        'state',
-        'cat_mh_departamento_id',
-        'cat_mh_municipio_id',
-        'phone',
-        'email',
-        'latitude',
-        'longitude',
-        'is_default',
+        'cat_mh_unidad_de_medida_id',
+        'codigo',
+        'nombre',
+        'descripcion',
+        'precio',
+        'peso',
+        'tamanio',
+        'imagen',
         'status',
-        'settings',
+        'atributos',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_default' => 'boolean',
-            'latitude'   => 'decimal:7',
-            'longitude'  => 'decimal:7',
-            'settings'   => 'array',
+            'precio'    => 'decimal:2',
+            'peso'      => 'decimal:3',
+            'atributos' => 'array',
         ];
     }
 
@@ -46,9 +42,9 @@ class Branch extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function users(): HasMany
+    public function unidadDeMedida(): BelongsTo
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(CatMhUnidadDeMedida::class, 'cat_mh_unidad_de_medida_id');
     }
 
     public function inventory(): HasMany
@@ -56,14 +52,9 @@ class Branch extends Model
         return $this->hasMany(Inventory::class);
     }
 
-    public function departamento(): BelongsTo
+    public function changeLogs(): HasMany
     {
-        return $this->belongsTo(CatMhDepartamento::class, 'cat_mh_departamento_id');
-    }
-
-    public function municipio(): BelongsTo
-    {
-        return $this->belongsTo(CatMhMunicipio::class, 'cat_mh_municipio_id');
+        return $this->hasMany(ProductChangeLog::class);
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
@@ -71,5 +62,19 @@ class Branch extends Model
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    /**
+     * Registra un cambio en el log del producto.
+     */
+    public function logChange(string $campo, mixed $valorAnterior, mixed $valorNuevo, ?int $userId = null, ?string $motivo = null): ProductChangeLog
+    {
+        return $this->changeLogs()->create([
+            'user_id'        => $userId,
+            'campo'          => $campo,
+            'valor_anterior' => is_array($valorAnterior) ? json_encode($valorAnterior) : $valorAnterior,
+            'valor_nuevo'    => is_array($valorNuevo) ? json_encode($valorNuevo) : $valorNuevo,
+            'motivo'         => $motivo,
+        ]);
     }
 }
