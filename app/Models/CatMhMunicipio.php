@@ -13,7 +13,13 @@ class CatMhMunicipio extends Model
     protected $table = 'cat_mh_municipio';
 
     protected $fillable = [
+        'cat_mh_departamento_id',
         'codigo',
         'descripcion',
     ];
+
+    public function departamento()
+    {
+        return $this->belongsTo(CatMhDepartamento::class, 'cat_mh_departamento_id');
+    }
 }
