@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\Catalog\CatMhActividadEconomicaController;
 use App\Http\Controllers\Api\V1\Catalog\CatMhTipoEstablecimientoController;
 use App\Http\Controllers\Api\V1\Catalog\CatMhDepartamentoController;
 use App\Http\Controllers\Api\V1\Catalog\CatMhMunicipioController;
+use App\Http\Controllers\Api\V1\Catalog\CatMhUnidadDeMedidaController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\CompanyEconomicActivityController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -213,6 +214,33 @@ Route::prefix('v1')->group(function () {
 
                  // DELETE /api/v1/catalog/municipios/{municipio}
                  Route::delete('/{municipio}', [CatMhMunicipioController::class, 'destroy'])
+                      ->name('destroy');
+             });
+         });
+
+    // ── Catálogo de unidades de medida MH ────────────────────────────────
+    Route::middleware(['auth:sanctum'])
+         ->prefix('catalog/unidades-de-medida')
+         ->name('catalog.unidades-de-medida.')
+         ->group(function () {
+
+             // GET /api/v1/catalog/unidades-de-medida  (todos los autenticados)
+             Route::get('/', [CatMhUnidadDeMedidaController::class, 'index'])
+                  ->name('index');
+
+             // Solo super admin puede crear/editar/eliminar del catálogo
+             Route::middleware('super_admin')->group(function () {
+
+                 // POST /api/v1/catalog/unidades-de-medida
+                 Route::post('/', [CatMhUnidadDeMedidaController::class, 'store'])
+                      ->name('store');
+
+                 // PUT /api/v1/catalog/unidades-de-medida/{unidad_de_medida}
+                 Route::put('/{unidad_de_medida}', [CatMhUnidadDeMedidaController::class, 'update'])
+                      ->name('update');
+
+                 // DELETE /api/v1/catalog/unidades-de-medida/{unidad_de_medida}
+                 Route::delete('/{unidad_de_medida}', [CatMhUnidadDeMedidaController::class, 'destroy'])
                       ->name('destroy');
              });
          });
