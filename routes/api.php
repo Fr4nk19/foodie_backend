@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Auth\AuthController;
+use App\Http\Controllers\Api\V1\BranchController;
 use App\Http\Controllers\Api\V1\Catalog\CatMhActividadEconomicaController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\CompanyEconomicActivityController;
@@ -15,10 +16,13 @@ use Illuminate\Support\Facades\Route;
 | Prefix: /api  (automático de Laravel)
 |
 | Estructura:
-|   /v1/auth/*                                → autenticación pública
-|   /v1/companies/*                           → gestión de empresas (solo super admin)
-|   /v1/catalog/economic-activities/*         → catálogo MH (solo super admin)
+|   /v1/auth/*                                    → autenticación pública
+|   /v1/companies/*                               → gestión de empresas (solo super admin)
+|   /v1/companies/{company}/branches/*            → sucursales por empresa (super admin)
+|   /v1/catalog/economic-activities/*             → catálogo MH (super admin)
 |   /v1/companies/{company}/economic-activities/* → actividades por empresa
+|   /v1/users/*                                   → usuarios globales (super admin)
+|   /v1/companies/{company}/users/*               → usuarios por empresa
 |
 */
 
@@ -67,6 +71,36 @@ Route::prefix('v1')->group(function () {
              // POST /api/v1/companies
              Route::post('/', [CompanyController::class, 'store'])
                   ->name('store');
+
+             // GET  /api/v1/companies/{company}
+             Route::get('/{company}', [CompanyController::class, 'show'])
+                  ->name('show');
+
+             // PUT  /api/v1/companies/{company}
+             Route::put('/{company}', [CompanyController::class, 'update'])
+                  ->name('update');
+
+             // ── Sucursales por empresa ─────────────────────────────────────
+             Route::prefix('/{company}/branches')
+                  ->name('branches.')
+                  ->group(function () {
+
+                      // GET    /api/v1/companies/{company}/branches
+                      Route::get('/', [BranchController::class, 'index'])
+                           ->name('index');
+
+                      // POST   /api/v1/companies/{company}/branches
+                      Route::post('/', [BranchController::class, 'store'])
+                           ->name('store');
+
+                      // PUT    /api/v1/companies/{company}/branches/{branch}
+                      Route::put('/{branch}', [BranchController::class, 'update'])
+                           ->name('update');
+
+                      // DELETE /api/v1/companies/{company}/branches/{branch}
+                      Route::delete('/{branch}', [BranchController::class, 'destroy'])
+                           ->name('destroy');
+                  });
          });
 
     // ── Catálogo de actividades económicas MH ─────────────────────────────
