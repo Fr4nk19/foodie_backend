@@ -16,4 +16,9 @@ class CatMhDepartamento extends Model
         'codigo',
         'descripcion',
     ];
+
+    public function municipios()
+    {
+        return $this->hasMany(CatMhMunicipio::class, 'cat_mh_departamento_id');
+    }
 }
