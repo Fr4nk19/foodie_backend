@@ -3,6 +3,9 @@
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\BranchController;
 use App\Http\Controllers\Api\V1\Catalog\CatMhActividadEconomicaController;
+use App\Http\Controllers\Api\V1\Catalog\CatMhTipoEstablecimientoController;
+use App\Http\Controllers\Api\V1\Catalog\CatMhDepartamentoController;
+use App\Http\Controllers\Api\V1\Catalog\CatMhMunicipioController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\CompanyEconomicActivityController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -20,6 +23,9 @@ use Illuminate\Support\Facades\Route;
 |   /v1/companies/*                               → gestión de empresas (solo super admin)
 |   /v1/companies/{company}/branches/*            → sucursales por empresa (super admin)
 |   /v1/catalog/economic-activities/*             → catálogo MH (super admin)
+|   /v1/catalog/tipo-establecimiento/*            → catálogo tipo establecimiento (super admin)
+|   /v1/catalog/departamentos/*                   → catálogo departamentos (super admin)
+|   /v1/catalog/municipios/*                      → catálogo municipios (super admin)
 |   /v1/companies/{company}/economic-activities/* → actividades por empresa
 |   /v1/users/*                                   → usuarios globales (super admin)
 |   /v1/companies/{company}/users/*               → usuarios por empresa
@@ -126,6 +132,87 @@ Route::prefix('v1')->group(function () {
 
                  // DELETE /api/v1/catalog/economic-activities/{actividad_economica}
                  Route::delete('/{actividad_economica}', [CatMhActividadEconomicaController::class, 'destroy'])
+                      ->name('destroy');
+             });
+         });
+
+    // ── Catálogo de tipos de establecimiento MH ───────────────────────────
+    Route::middleware(['auth:sanctum'])
+         ->prefix('catalog/tipo-establecimiento')
+         ->name('catalog.tipo-establecimiento.')
+         ->group(function () {
+
+             // GET /api/v1/catalog/tipo-establecimiento  (todos los autenticados)
+             Route::get('/', [CatMhTipoEstablecimientoController::class, 'index'])
+                  ->name('index');
+
+             // Solo super admin puede crear/editar/eliminar del catálogo
+             Route::middleware('super_admin')->group(function () {
+
+                 // POST /api/v1/catalog/tipo-establecimiento
+                 Route::post('/', [CatMhTipoEstablecimientoController::class, 'store'])
+                      ->name('store');
+
+                 // PUT /api/v1/catalog/tipo-establecimiento/{tipo_establecimiento}
+                 Route::put('/{tipo_establecimiento}', [CatMhTipoEstablecimientoController::class, 'update'])
+                      ->name('update');
+
+                 // DELETE /api/v1/catalog/tipo-establecimiento/{tipo_establecimiento}
+                 Route::delete('/{tipo_establecimiento}', [CatMhTipoEstablecimientoController::class, 'destroy'])
+                      ->name('destroy');
+             });
+         });
+
+    // ── Catálogo de departamentos MH ──────────────────────────────────────
+    Route::middleware(['auth:sanctum'])
+         ->prefix('catalog/departamentos')
+         ->name('catalog.departamentos.')
+         ->group(function () {
+
+             // GET /api/v1/catalog/departamentos  (todos los autenticados)
+             Route::get('/', [CatMhDepartamentoController::class, 'index'])
+                  ->name('index');
+
+             // Solo super admin puede crear/editar/eliminar del catálogo
+             Route::middleware('super_admin')->group(function () {
+
+                 // POST /api/v1/catalog/departamentos
+                 Route::post('/', [CatMhDepartamentoController::class, 'store'])
+                      ->name('store');
+
+                 // PUT /api/v1/catalog/departamentos/{departamento}
+                 Route::put('/{departamento}', [CatMhDepartamentoController::class, 'update'])
+                      ->name('update');
+
+                 // DELETE /api/v1/catalog/departamentos/{departamento}
+                 Route::delete('/{departamento}', [CatMhDepartamentoController::class, 'destroy'])
+                      ->name('destroy');
+             });
+         });
+
+    // ── Catálogo de municipios MH ─────────────────────────────────────────
+    Route::middleware(['auth:sanctum'])
+         ->prefix('catalog/municipios')
+         ->name('catalog.municipios.')
+         ->group(function () {
+
+             // GET /api/v1/catalog/municipios  (todos los autenticados)
+             Route::get('/', [CatMhMunicipioController::class, 'index'])
+                  ->name('index');
+
+             // Solo super admin puede crear/editar/eliminar del catálogo
+             Route::middleware('super_admin')->group(function () {
+
+                 // POST /api/v1/catalog/municipios
+                 Route::post('/', [CatMhMunicipioController::class, 'store'])
+                      ->name('store');
+
+                 // PUT /api/v1/catalog/municipios/{municipio}
+                 Route::put('/{municipio}', [CatMhMunicipioController::class, 'update'])
+                      ->name('update');
+
+                 // DELETE /api/v1/catalog/municipios/{municipio}
+                 Route::delete('/{municipio}', [CatMhMunicipioController::class, 'destroy'])
                       ->name('destroy');
              });
          });
