@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\V1\Catalog\CatMhMunicipioController;
 use App\Http\Controllers\Api\V1\Catalog\CatMhUnidadDeMedidaController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\CompanyEconomicActivityController;
+use App\Http\Controllers\Api\V1\InventoryController;
+use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -307,5 +309,43 @@ Route::prefix('v1')->group(function () {
 
              // DELETE /api/v1/companies/{company}/users/{user}
              Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+         });
+
+    // ── Productos por empresa (company_admin o super admin) ───────────────
+    Route::middleware(['auth:sanctum', 'company_admin_or_super'])
+         ->prefix('companies/{company}/products')
+         ->name('companies.products.')
+         ->group(function () {
+
+             // GET /api/v1/companies/{company}/products
+             Route::get('/', [ProductController::class, 'index'])->name('index');
+
+             // POST /api/v1/companies/{company}/products
+             Route::post('/', [ProductController::class, 'store'])->name('store');
+
+             // PUT /api/v1/companies/{company}/products/{product}
+             Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+
+             // DELETE /api/v1/companies/{company}/products/{product}
+             Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+         });
+
+    // ── Inventario por sucursal (company_admin o super admin) ─────────────
+    Route::middleware(['auth:sanctum', 'company_admin_or_super'])
+         ->prefix('companies/{company}/branches/{branch}/inventory')
+         ->name('companies.branches.inventory.')
+         ->group(function () {
+
+             // GET /api/v1/companies/{company}/branches/{branch}/inventory
+             Route::get('/', [InventoryController::class, 'index'])->name('index');
+
+             // POST /api/v1/companies/{company}/branches/{branch}/inventory
+             Route::post('/', [InventoryController::class, 'store'])->name('store');
+
+             // PUT /api/v1/companies/{company}/branches/{branch}/inventory/{inventory}
+             Route::put('/{inventory}', [InventoryController::class, 'update'])->name('update');
+
+             // DELETE /api/v1/companies/{company}/branches/{branch}/inventory/{inventory}
+             Route::delete('/{inventory}', [InventoryController::class, 'destroy'])->name('destroy');
          });
 });
