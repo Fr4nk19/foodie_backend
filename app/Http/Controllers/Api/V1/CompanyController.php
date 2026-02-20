@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Company\StoreCompanyRequest;
+use App\Http\Requests\Api\V1\Company\UpdateCompanyRequest;
 use App\Http\Resources\Api\V1\CompanyResource;
 use App\Models\Branch;
 use App\Models\Company;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CompanyController extends Controller
@@ -15,17 +17,32 @@ class CompanyController extends Controller
     /**
      * GET /api/v1/companies
      *
-     * List all companies with their default branch.
+     * List companies with pagination.
+     * Query params:
+     *   - per_page: int (default 15, max 100)
+     *   - page:     int (default 1)
+     *
      * Requires: auth:sanctum + super_admin role.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $companies = Company::with('branches', 'defaultBranch')
+        $perPage = (int) $request->query('per_page', 15);
+        $perPage = min(max($perPage, 1), 100);
+
+        $paginator = Company::with('branches', 'defaultBranch')
             ->latest()
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
-            'companies' => CompanyResource::collection($companies),
+            'data' => CompanyResource::collection($paginator->items()),
+            'meta' => [
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'per_page'     => $paginator->perPage(),
+                'total'        => $paginator->total(),
+                'from'         => $paginator->firstItem() ?? 0,
+                'to'           => $paginator->lastItem()  ?? 0,
+            ],
         ]);
     }
 
@@ -68,6 +85,37 @@ class CompanyController extends Controller
             'message' => 'Empresa creada exitosamente.',
             'company' => new CompanyResource($company->load('branches', 'defaultBranch')),
         ], 201);
+    }
+
+    /**
+     * GET /api/v1/companies/{company}
+     *
+     * Show a single company with its branches.
+     * Requires: auth:sanctum + super_admin role.
+     */
+    public function show(Company $company): JsonResponse
+    {
+        $company->load('branches', 'defaultBranch');
+
+        return response()->json([
+            'company' => new CompanyResource($company),
+        ]);
+    }
+
+    /**
+     * PUT /api/v1/companies/{company}
+     *
+     * Update a company's data.
+     * Requires: auth:sanctum + super_admin role.
+     */
+    public function update(UpdateCompanyRequest $request, Company $company): JsonResponse
+    {
+        $company->update($request->validated());
+
+        return response()->json([
+            'message' => 'Empresa actualizada exitosamente.',
+            'company' => new CompanyResource($company->fresh()->load('branches', 'defaultBranch')),
+        ]);
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
