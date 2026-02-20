@@ -63,6 +63,11 @@ class Company extends Model
         return $this->hasMany(EconomicActivityByCompany::class);
     }
 
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
     public function primaryEconomicActivity(): HasOne
     {
         return $this->hasOne(EconomicActivityByCompany::class)->where('is_primary', true);
