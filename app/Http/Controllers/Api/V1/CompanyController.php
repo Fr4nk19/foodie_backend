@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Company\StoreCompanyRequest;
+use App\Http\Requests\Api\V1\Company\UpdateCompanyRequest;
 use App\Http\Resources\Api\V1\CompanyResource;
 use App\Models\Branch;
 use App\Models\Company;
@@ -84,6 +85,37 @@ class CompanyController extends Controller
             'message' => 'Empresa creada exitosamente.',
             'company' => new CompanyResource($company->load('branches', 'defaultBranch')),
         ], 201);
+    }
+
+    /**
+     * GET /api/v1/companies/{company}
+     *
+     * Show a single company with its branches.
+     * Requires: auth:sanctum + super_admin role.
+     */
+    public function show(Company $company): JsonResponse
+    {
+        $company->load('branches', 'defaultBranch');
+
+        return response()->json([
+            'company' => new CompanyResource($company),
+        ]);
+    }
+
+    /**
+     * PUT /api/v1/companies/{company}
+     *
+     * Update a company's data.
+     * Requires: auth:sanctum + super_admin role.
+     */
+    public function update(UpdateCompanyRequest $request, Company $company): JsonResponse
+    {
+        $company->update($request->validated());
+
+        return response()->json([
+            'message' => 'Empresa actualizada exitosamente.',
+            'company' => new CompanyResource($company->fresh()->load('branches', 'defaultBranch')),
+        ]);
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
