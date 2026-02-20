@@ -29,7 +29,7 @@ class CompanyController extends Controller
         $perPage = (int) $request->query('per_page', 15);
         $perPage = min(max($perPage, 1), 100);
 
-        $paginator = Company::with('branches', 'defaultBranch')
+        $paginator = Company::with('branches', 'defaultBranch', 'departamento', 'municipio')
             ->latest()
             ->paginate($perPage);
 
@@ -57,33 +57,37 @@ class CompanyController extends Controller
         $slug = $this->uniqueSlug($request->name);
 
         $company = Company::create([
-            'name'     => $request->name,
-            'slug'     => $slug,
-            'email'    => $request->email,
-            'phone'    => $request->phone,
-            'address'  => $request->address,
-            'city'     => $request->city,
-            'state'    => $request->state,
-            'country'  => $request->country  ?? 'Venezuela',
-            'timezone' => $request->timezone ?? 'UTC',
-            'plan'     => $request->plan     ?? 'free',
-            'status'   => 'active',
+            'name'                   => $request->name,
+            'slug'                   => $slug,
+            'email'                  => $request->email,
+            'phone'                  => $request->phone,
+            'address'                => $request->address,
+            'city'                   => $request->city,
+            'state'                  => $request->state,
+            'cat_mh_departamento_id' => $request->cat_mh_departamento_id,
+            'cat_mh_municipio_id'    => $request->cat_mh_municipio_id,
+            'country'                => $request->country  ?? 'Venezuela',
+            'timezone'               => $request->timezone ?? 'UTC',
+            'plan'                   => $request->plan     ?? 'free',
+            'status'                 => 'active',
         ]);
 
         // Crear sucursal principal automáticamente
         Branch::create([
-            'company_id' => $company->id,
-            'name'       => $request->branch_name    ?? 'Principal',
-            'address'    => $request->branch_address ?? $request->address ?? 'Por definir',
-            'city'       => $request->city,
-            'state'      => $request->state,
-            'is_default' => true,
-            'status'     => 'active',
+            'company_id'             => $company->id,
+            'name'                   => $request->branch_name    ?? 'Principal',
+            'address'                => $request->branch_address ?? $request->address ?? 'Por definir',
+            'city'                   => $request->city,
+            'state'                  => $request->state,
+            'cat_mh_departamento_id' => $request->cat_mh_departamento_id,
+            'cat_mh_municipio_id'    => $request->cat_mh_municipio_id,
+            'is_default'             => true,
+            'status'                 => 'active',
         ]);
 
         return response()->json([
             'message' => 'Empresa creada exitosamente.',
-            'company' => new CompanyResource($company->load('branches', 'defaultBranch')),
+            'company' => new CompanyResource($company->load('branches', 'defaultBranch', 'departamento', 'municipio')),
         ], 201);
     }
 
@@ -95,7 +99,7 @@ class CompanyController extends Controller
      */
     public function show(Company $company): JsonResponse
     {
-        $company->load('branches', 'defaultBranch');
+        $company->load('branches', 'defaultBranch', 'departamento', 'municipio');
 
         return response()->json([
             'company' => new CompanyResource($company),
@@ -114,7 +118,7 @@ class CompanyController extends Controller
 
         return response()->json([
             'message' => 'Empresa actualizada exitosamente.',
-            'company' => new CompanyResource($company->fresh()->load('branches', 'defaultBranch')),
+            'company' => new CompanyResource($company->fresh()->load('branches', 'defaultBranch', 'departamento', 'municipio')),
         ]);
     }
 
