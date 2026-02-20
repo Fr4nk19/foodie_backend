@@ -19,6 +19,18 @@ class CompanyResource extends JsonResource
             'address'       => $this->address,
             'city'          => $this->city,
             'state'         => $this->state,
+            'cat_mh_departamento_id' => $this->cat_mh_departamento_id,
+            'cat_mh_municipio_id'    => $this->cat_mh_municipio_id,
+            'departamento'  => $this->whenLoaded('departamento', fn () => [
+                'id'          => $this->departamento->id,
+                'codigo'      => $this->departamento->codigo,
+                'descripcion' => $this->departamento->descripcion,
+            ]),
+            'municipio'     => $this->whenLoaded('municipio', fn () => [
+                'id'          => $this->municipio->id,
+                'codigo'      => $this->municipio->codigo,
+                'descripcion' => $this->municipio->descripcion,
+            ]),
             'country'       => $this->country,
             'timezone'      => $this->timezone,
             'status'        => $this->status,

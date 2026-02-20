@@ -35,16 +35,18 @@ class BranchController extends Controller
     public function store(Request $request, Company $company): JsonResponse
     {
         $validated = $request->validate([
-            'name'       => ['required', 'string', 'max:255'],
-            'address'    => ['nullable', 'string', 'max:500'],
-            'city'       => ['nullable', 'string', 'max:100'],
-            'state'      => ['nullable', 'string', 'max:100'],
-            'phone'      => ['nullable', 'string', 'max:30'],
-            'email'      => ['nullable', 'string', 'email', 'max:255'],
-            'latitude'   => ['nullable', 'numeric'],
-            'longitude'  => ['nullable', 'numeric'],
-            'is_default' => ['nullable', 'boolean'],
-            'status'     => ['nullable', 'string', 'in:active,inactive'],
+            'name'                   => ['required', 'string', 'max:255'],
+            'address'                => ['nullable', 'string', 'max:500'],
+            'city'                   => ['nullable', 'string', 'max:100'],
+            'state'                  => ['nullable', 'string', 'max:100'],
+            'cat_mh_departamento_id' => ['nullable', 'integer', 'exists:cat_mh_departamento,id'],
+            'cat_mh_municipio_id'    => ['nullable', 'integer', 'exists:cat_mh_municipio,id'],
+            'phone'                  => ['nullable', 'string', 'max:30'],
+            'email'                  => ['nullable', 'string', 'email', 'max:255'],
+            'latitude'               => ['nullable', 'numeric'],
+            'longitude'              => ['nullable', 'numeric'],
+            'is_default'             => ['nullable', 'boolean'],
+            'status'                 => ['nullable', 'string', 'in:active,inactive'],
         ]);
 
         // Si se marca como default, desmarcar las demás
@@ -75,16 +77,18 @@ class BranchController extends Controller
         abort_if((int) $branch->company_id !== (int) $company->id, 404);
 
         $validated = $request->validate([
-            'name'       => ['sometimes', 'required', 'string', 'max:255'],
-            'address'    => ['nullable', 'string', 'max:500'],
-            'city'       => ['nullable', 'string', 'max:100'],
-            'state'      => ['nullable', 'string', 'max:100'],
-            'phone'      => ['nullable', 'string', 'max:30'],
-            'email'      => ['nullable', 'string', 'email', 'max:255'],
-            'latitude'   => ['nullable', 'numeric'],
-            'longitude'  => ['nullable', 'numeric'],
-            'is_default' => ['nullable', 'boolean'],
-            'status'     => ['nullable', 'string', 'in:active,inactive'],
+            'name'                   => ['sometimes', 'required', 'string', 'max:255'],
+            'address'                => ['nullable', 'string', 'max:500'],
+            'city'                   => ['nullable', 'string', 'max:100'],
+            'state'                  => ['nullable', 'string', 'max:100'],
+            'cat_mh_departamento_id' => ['nullable', 'integer', 'exists:cat_mh_departamento,id'],
+            'cat_mh_municipio_id'    => ['nullable', 'integer', 'exists:cat_mh_municipio,id'],
+            'phone'                  => ['nullable', 'string', 'max:30'],
+            'email'                  => ['nullable', 'string', 'email', 'max:255'],
+            'latitude'               => ['nullable', 'numeric'],
+            'longitude'              => ['nullable', 'numeric'],
+            'is_default'             => ['nullable', 'boolean'],
+            'status'                 => ['nullable', 'string', 'in:active,inactive'],
         ]);
 
         // Si se marca como default, desmarcar las demás
