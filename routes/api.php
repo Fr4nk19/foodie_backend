@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Catalog\CatMhActividadEconomicaController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\CompanyEconomicActivityController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -116,5 +117,46 @@ Route::prefix('v1')->group(function () {
              // DELETE /api/v1/companies/{company}/economic-activities/{economicActivity}
              Route::delete('/{economicActivity}', [CompanyEconomicActivityController::class, 'destroy'])
                   ->name('destroy');
+         });
+
+    // ── Usuarios globales (solo super admin) ──────────────────────────────
+    Route::middleware(['auth:sanctum', 'super_admin'])
+         ->prefix('users')
+         ->name('users.')
+         ->group(function () {
+
+             // GET  /api/v1/users
+             Route::get('/',       [UserController::class, 'index'])->name('index');
+
+             // POST /api/v1/users
+             Route::post('/',      [UserController::class, 'store'])->name('store');
+
+             // GET  /api/v1/users/{user}
+             Route::get('/{user}', [UserController::class, 'show'])->name('show');
+
+             // PUT  /api/v1/users/{user}
+             Route::put('/{user}', [UserController::class, 'update'])->name('update');
+
+             // DELETE /api/v1/users/{user}
+             Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+         });
+
+    // ── Usuarios por empresa (company_admin o super admin) ────────────────
+    Route::middleware(['auth:sanctum', 'company_admin_or_super'])
+         ->prefix('companies/{company}/users')
+         ->name('companies.users.')
+         ->group(function () {
+
+             // GET  /api/v1/companies/{company}/users
+             Route::get('/',       [UserController::class, 'indexByCompany'])->name('index');
+
+             // POST /api/v1/companies/{company}/users
+             Route::post('/',      [UserController::class, 'storeForCompany'])->name('store');
+
+             // PUT  /api/v1/companies/{company}/users/{user}
+             Route::put('/{user}', [UserController::class, 'update'])->name('update');
+
+             // DELETE /api/v1/companies/{company}/users/{user}
+             Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
          });
 });
