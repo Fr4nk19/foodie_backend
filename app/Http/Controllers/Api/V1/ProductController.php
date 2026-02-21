@@ -24,7 +24,7 @@ class ProductController extends Controller
         $perPage = (int) $request->query('per_page', 15);
         $perPage = min(max($perPage, 1), 100);
 
-        $paginator = Product::with('unidadDeMedida')
+        $paginator = Product::with(['unidadDeMedida', 'category'])
             ->where('company_id', $company->id)
             ->latest()
             ->paginate($perPage);
@@ -57,7 +57,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Producto creado exitosamente.',
-            'data'    => new ProductResource($product->load('unidadDeMedida')),
+            'data'    => new ProductResource($product->load(['unidadDeMedida', 'category'])),
         ], 201);
     }
 
@@ -75,7 +75,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Producto actualizado exitosamente.',
-            'data'    => new ProductResource($product->fresh()->load('unidadDeMedida')),
+            'data'    => new ProductResource($product->fresh()->load(['unidadDeMedida', 'category'])),
         ]);
     }
 

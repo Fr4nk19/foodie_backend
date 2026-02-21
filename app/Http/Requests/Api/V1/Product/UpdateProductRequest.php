@@ -18,6 +18,10 @@ class UpdateProductRequest extends FormRequest
         $productId = $this->route('product')?->id;
 
         return [
+            'product_category_id'        => [
+                'nullable',
+                Rule::exists('product_categories', 'id')->where('company_id', $companyId),
+            ],
             'cat_mh_unidad_de_medida_id' => ['sometimes', 'required', 'exists:cat_mh_unidades_de_medida,id'],
             'codigo'                     => [
                 'nullable', 'string', 'max:50',
@@ -32,6 +36,7 @@ class UpdateProductRequest extends FormRequest
             'tamanio'                    => ['nullable', 'string', 'max:100'],
             'imagen'                     => ['nullable', 'string', 'max:500'],
             'status'                     => ['nullable', 'in:active,inactive'],
+            'track_stock'                => ['nullable', 'boolean'],
             'atributos'                  => ['nullable', 'array'],
         ];
     }
@@ -39,6 +44,7 @@ class UpdateProductRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'product_category_id.exists'        => 'La categoría seleccionada no existe o no pertenece a esta empresa.',
             'cat_mh_unidad_de_medida_id.exists' => 'La unidad de medida seleccionada no existe.',
             'codigo.unique'                      => 'El código SKU ya existe para esta empresa.',
             'nombre.required'                    => 'El nombre del producto es obligatorio.',

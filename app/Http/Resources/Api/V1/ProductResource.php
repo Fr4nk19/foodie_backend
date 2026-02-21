@@ -12,6 +12,7 @@ class ProductResource extends JsonResource
         return [
             'id'                         => $this->id,
             'company_id'                 => $this->company_id,
+            'product_category_id'        => $this->product_category_id,
             'cat_mh_unidad_de_medida_id' => $this->cat_mh_unidad_de_medida_id,
             'codigo'                     => $this->codigo,
             'nombre'                     => $this->nombre,
@@ -21,7 +22,13 @@ class ProductResource extends JsonResource
             'tamanio'                    => $this->tamanio,
             'imagen'                     => $this->imagen,
             'status'                     => $this->status,
+            'track_stock'                => $this->track_stock,
             'atributos'                  => $this->atributos,
+            'categoria'                  => $this->whenLoaded('category', fn () => $this->category ? [
+                'id'     => $this->category->id,
+                'nombre' => $this->category->nombre,
+                'color'  => $this->category->color,
+            ] : null),
             'unidad_de_medida'           => $this->whenLoaded('unidadDeMedida', fn () => [
                 'id'          => $this->unidadDeMedida->id,
                 'codigo'      => $this->unidadDeMedida->codigo,

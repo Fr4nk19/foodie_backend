@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Catalog\CatMhUnidadDeMedidaController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\CompanyEconomicActivityController;
 use App\Http\Controllers\Api\V1\InventoryController;
+use App\Http\Controllers\Api\V1\ProductCategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
@@ -309,6 +310,25 @@ Route::prefix('v1')->group(function () {
 
              // DELETE /api/v1/companies/{company}/users/{user}
              Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+         });
+
+    // ── Categorías de productos por empresa (company_admin o super admin) ────
+    Route::middleware(['auth:sanctum', 'company_admin_or_super'])
+         ->prefix('companies/{company}/product-categories')
+         ->name('companies.product-categories.')
+         ->group(function () {
+
+             // GET    /api/v1/companies/{company}/product-categories
+             Route::get('/', [ProductCategoryController::class, 'index'])->name('index');
+
+             // POST   /api/v1/companies/{company}/product-categories
+             Route::post('/', [ProductCategoryController::class, 'store'])->name('store');
+
+             // PUT    /api/v1/companies/{company}/product-categories/{productCategory}
+             Route::put('/{productCategory}', [ProductCategoryController::class, 'update'])->name('update');
+
+             // DELETE /api/v1/companies/{company}/product-categories/{productCategory}
+             Route::delete('/{productCategory}', [ProductCategoryController::class, 'destroy'])->name('destroy');
          });
 
     // ── Productos por empresa (company_admin o super admin) ───────────────
