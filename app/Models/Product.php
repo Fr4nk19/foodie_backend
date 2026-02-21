@@ -14,6 +14,7 @@ class Product extends Model
 
     protected $fillable = [
         'company_id',
+        'product_category_id',
         'cat_mh_unidad_de_medida_id',
         'codigo',
         'nombre',
@@ -23,15 +24,17 @@ class Product extends Model
         'tamanio',
         'imagen',
         'status',
+        'track_stock',
         'atributos',
     ];
 
     protected function casts(): array
     {
         return [
-            'precio'    => 'decimal:2',
-            'peso'      => 'decimal:3',
-            'atributos' => 'array',
+            'precio'      => 'decimal:2',
+            'peso'        => 'decimal:3',
+            'track_stock' => 'boolean',
+            'atributos'   => 'array',
         ];
     }
 
@@ -40,6 +43,11 @@ class Product extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
     }
 
     public function unidadDeMedida(): BelongsTo

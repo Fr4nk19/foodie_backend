@@ -24,6 +24,7 @@ class InventoryResource extends JsonResource
                 'descripcion'      => $this->product->descripcion,
                 'precio'           => $this->product->precio,
                 'status'           => $this->product->status,
+                'track_stock'      => $this->product->track_stock,
                 'unidad_de_medida' => $this->product->relationLoaded('unidadDeMedida') ? [
                     'id'          => $this->product->unidadDeMedida->id,
                     'codigo'      => $this->product->unidadDeMedida->codigo,
