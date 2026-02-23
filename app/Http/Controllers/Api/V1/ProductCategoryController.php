@@ -41,6 +41,20 @@ class ProductCategoryController extends Controller
     }
 
     /**
+     * GET /api/v1/companies/{company}/product-categories/{productCategory}
+     *
+     * Muestra una categoría de productos.
+     */
+    public function show(Company $company, ProductCategory $productCategory): JsonResponse
+    {
+        abort_if((int) $productCategory->company_id !== (int) $company->id, 404);
+
+        return response()->json([
+            'data' => new ProductCategoryResource($productCategory),
+        ]);
+    }
+
+    /**
      * POST /api/v1/companies/{company}/product-categories
      *
      * Crea una nueva categoría de productos para la empresa.

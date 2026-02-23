@@ -95,10 +95,6 @@ Route::prefix('v1')->group(function () {
                   ->name('branches.')
                   ->group(function () {
 
-                      // GET    /api/v1/companies/{company}/branches
-                      Route::get('/', [BranchController::class, 'index'])
-                           ->name('index');
-
                       // POST   /api/v1/companies/{company}/branches
                       Route::post('/', [BranchController::class, 'store'])
                            ->name('store');
@@ -111,6 +107,18 @@ Route::prefix('v1')->group(function () {
                       Route::delete('/{branch}', [BranchController::class, 'destroy'])
                            ->name('destroy');
                   });
+         });
+
+    // ── Sucursales por empresa (company_admin o super admin: solo lectura) ─
+    Route::middleware(['auth:sanctum', 'company_admin_or_super'])
+         ->prefix('companies/{company}/branches')
+         ->name('companies.branches.')
+         ->group(function () {
+             // GET /api/v1/companies/{company}/branches
+             Route::get('/', [BranchController::class, 'index'])->name('index');
+
+             // GET /api/v1/companies/{company}/branches/{branch}
+             Route::get('/{branch}', [BranchController::class, 'show'])->name('show');
          });
 
     // ── Catálogo de actividades económicas MH ─────────────────────────────
@@ -321,6 +329,9 @@ Route::prefix('v1')->group(function () {
              // GET    /api/v1/companies/{company}/product-categories
              Route::get('/', [ProductCategoryController::class, 'index'])->name('index');
 
+             // GET    /api/v1/companies/{company}/product-categories/{productCategory}
+             Route::get('/{productCategory}', [ProductCategoryController::class, 'show'])->name('show');
+
              // POST   /api/v1/companies/{company}/product-categories
              Route::post('/', [ProductCategoryController::class, 'store'])->name('store');
 
@@ -340,6 +351,9 @@ Route::prefix('v1')->group(function () {
              // GET /api/v1/companies/{company}/products
              Route::get('/', [ProductController::class, 'index'])->name('index');
 
+             // GET /api/v1/companies/{company}/products/{product}
+             Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+
              // POST /api/v1/companies/{company}/products
              Route::post('/', [ProductController::class, 'store'])->name('store');
 
@@ -358,6 +372,9 @@ Route::prefix('v1')->group(function () {
 
              // GET /api/v1/companies/{company}/branches/{branch}/inventory
              Route::get('/', [InventoryController::class, 'index'])->name('index');
+
+             // GET /api/v1/companies/{company}/branches/{branch}/inventory/{inventory}
+             Route::get('/{inventory}', [InventoryController::class, 'show'])->name('show');
 
              // POST /api/v1/companies/{company}/branches/{branch}/inventory
              Route::post('/', [InventoryController::class, 'store'])->name('store');

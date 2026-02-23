@@ -43,6 +43,21 @@ class ProductController extends Controller
     }
 
     /**
+     * GET /api/v1/companies/{company}/products/{product}
+     *
+     * Show a single product.
+     * Requires: auth:sanctum + company_admin_or_super.
+     */
+    public function show(Company $company, Product $product): JsonResponse
+    {
+        abort_if((int) $product->company_id !== (int) $company->id, 404);
+
+        return response()->json([
+            'data' => new ProductResource($product->load(['unidadDeMedida', 'category'])),
+        ]);
+    }
+
+    /**
      * POST /api/v1/companies/{company}/products
      *
      * Create a new product for the given company.

@@ -15,7 +15,7 @@ class BranchController extends Controller
      * GET /api/v1/companies/{company}/branches
      *
      * List all branches of a company.
-     * Requires: auth:sanctum + super_admin role.
+     * Requires: auth:sanctum + company_admin_or_super.
      */
     public function index(Company $company): JsonResponse
     {
@@ -23,6 +23,21 @@ class BranchController extends Controller
 
         return response()->json([
             'data' => BranchResource::collection($branches),
+        ]);
+    }
+
+    /**
+     * GET /api/v1/companies/{company}/branches/{branch}
+     *
+     * Show a single branch of a company.
+     * Requires: auth:sanctum + company_admin_or_super.
+     */
+    public function show(Company $company, Branch $branch): JsonResponse
+    {
+        abort_if((int) $branch->company_id !== (int) $company->id, 404);
+
+        return response()->json([
+            'data' => new BranchResource($branch),
         ]);
     }
 

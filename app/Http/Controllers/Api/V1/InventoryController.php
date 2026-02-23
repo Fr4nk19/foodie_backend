@@ -46,6 +46,22 @@ class InventoryController extends Controller
     }
 
     /**
+     * GET /api/v1/companies/{company}/branches/{branch}/inventory/{inventory}
+     *
+     * Show a single inventory item.
+     * Requires: auth:sanctum + company_admin_or_super.
+     */
+    public function show(Company $company, Branch $branch, Inventory $inventory): JsonResponse
+    {
+        abort_if($branch->company_id !== $company->id, 404);
+        abort_if($inventory->branch_id !== $branch->id, 404);
+
+        return response()->json([
+            'data' => new InventoryResource($inventory->load('product.unidadDeMedida')),
+        ]);
+    }
+
+    /**
      * POST /api/v1/companies/{company}/branches/{branch}/inventory
      *
      * Add a product to the branch inventory.
