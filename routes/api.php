@@ -118,20 +118,11 @@ Route::prefix('v1')->group(function () {
          ->prefix('companies/{company}/branches')
          ->name('companies.branches.')
          ->group(function () {
-     // GET    /api/v1/companies/{company}/branches
-         Route::get('/', [BranchController::class, 'index'])->name('index');
+             // GET /api/v1/companies/{company}/branches
+             Route::get('/', [BranchController::class, 'index'])->name('index');
 
-         // GET    /api/v1/companies/{company}/branches/{branch}
-         Route::get('/{branch}', [BranchController::class, 'show'])->name('show');
-
-         // POST   /api/v1/companies/{company}/branches
-         Route::post('/', [BranchController::class, 'store'])->name('store');
-
-         // PUT    /api/v1/companies/{company}/branches/{branch}
-         Route::put('/{branch}', [BranchController::class, 'update'])->name('update');
-
-         // DELETE /api/v1/companies/{company}/branches/{branch}
-         Route::delete('/{branch}', [BranchController::class, 'destroy'])->name('destroy');
+             // GET /api/v1/companies/{company}/branches/{branch}
+             Route::get('/{branch}', [BranchController::class, 'show'])->name('show');
          });
 
     
