@@ -56,6 +56,16 @@ class Branch extends Model
         return $this->hasMany(Inventory::class);
     }
 
+    public function tables(): HasMany
+    {
+        return $this->hasMany(Table::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function departamento(): BelongsTo
     {
         return $this->belongsTo(CatMhDepartamento::class, 'cat_mh_departamento_id');
