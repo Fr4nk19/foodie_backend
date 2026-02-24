@@ -27,6 +27,7 @@ class User extends Authenticatable
         'company_id',
         'branch_id',
         'is_active',
+        'job_type',
     ];
 
     /**

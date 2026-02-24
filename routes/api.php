@@ -13,6 +13,9 @@ use App\Http\Controllers\Api\V1\InventoryController;
 use App\Http\Controllers\Api\V1\ProductCategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\TableController;
+use App\Http\Controllers\Api\V1\OrderController;
+use App\Http\Controllers\Api\V1\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -398,5 +401,65 @@ Route::prefix('v1')->group(function () {
 
              // DELETE /api/v1/companies/{company}/branches/{branch}/inventory/{inventory}
              Route::delete('/{inventory}', [InventoryController::class, 'destroy'])->name('destroy');
+         });
+
+    // ── Mesas por sucursal (autenticados) ──────────────────────────────────
+    Route::middleware(['auth:sanctum'])
+         ->prefix('companies/{company}/branches/{branch}/tables')
+         ->name('companies.branches.tables.')
+         ->group(function () {
+
+             // GET    /api/v1/companies/{company}/branches/{branch}/tables
+             Route::get('/', [TableController::class, 'index'])->name('index');
+
+             // GET    /api/v1/companies/{company}/branches/{branch}/tables/{table}
+             Route::get('/{table}', [TableController::class, 'show'])->name('show');
+
+             // POST   /api/v1/companies/{company}/branches/{branch}/tables
+             Route::post('/', [TableController::class, 'store'])->name('store');
+
+             // PUT    /api/v1/companies/{company}/branches/{branch}/tables/{table}
+             Route::put('/{table}', [TableController::class, 'update'])->name('update');
+
+             // DELETE /api/v1/companies/{company}/branches/{branch}/tables/{table}
+             Route::delete('/{table}', [TableController::class, 'destroy'])->name('destroy');
+         });
+
+    // ── Pedidos por sucursal (autenticados) ────────────────────────────────
+    Route::middleware(['auth:sanctum'])
+         ->prefix('companies/{company}/branches/{branch}/orders')
+         ->name('companies.branches.orders.')
+         ->group(function () {
+
+             // GET    /api/v1/companies/{company}/branches/{branch}/orders
+             Route::get('/', [OrderController::class, 'index'])->name('index');
+
+             // GET    /api/v1/companies/{company}/branches/{branch}/orders/{order}
+             Route::get('/{order}', [OrderController::class, 'show'])->name('show');
+
+             // POST   /api/v1/companies/{company}/branches/{branch}/orders
+             Route::post('/', [OrderController::class, 'store'])->name('store');
+
+             // PUT    /api/v1/companies/{company}/branches/{branch}/orders/{order}
+             Route::put('/{order}', [OrderController::class, 'update'])->name('update');
+
+             // PATCH  /api/v1/companies/{company}/branches/{branch}/orders/{order}/status
+             Route::patch('/{order}/status', [OrderController::class, 'updateStatus'])->name('status');
+
+             // PATCH  /api/v1/companies/{company}/branches/{branch}/orders/{order}/items/{item}/toggle
+             Route::patch('/{order}/items/{item}/toggle', [OrderController::class, 'toggleItem'])->name('items.toggle');
+
+             // DELETE /api/v1/companies/{company}/branches/{branch}/orders/{order}
+             Route::delete('/{order}', [OrderController::class, 'destroy'])->name('destroy');
+         });
+
+    // ── Dashboard por sucursal (autenticados) ──────────────────────────────
+    Route::middleware(['auth:sanctum'])
+         ->prefix('companies/{company}/branches/{branch}')
+         ->name('companies.branches.')
+         ->group(function () {
+
+             // GET /api/v1/companies/{company}/branches/{branch}/dashboard
+             Route::get('/dashboard', [DashboardController::class, 'stats'])->name('dashboard');
          });
 });
