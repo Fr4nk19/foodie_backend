@@ -18,6 +18,8 @@ class Branch extends Model
         'address',
         'city',
         'state',
+        'cat_mh_departamento_id',
+        'cat_mh_municipio_id',
         'phone',
         'email',
         'latitude',
@@ -47,6 +49,36 @@ class Branch extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function inventory(): HasMany
+    {
+        return $this->hasMany(Inventory::class);
+    }
+
+    public function tables(): HasMany
+    {
+        return $this->hasMany(Table::class);
+    }
+
+    public function tableZones(): HasMany
+    {
+        return $this->hasMany(TableZone::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function departamento(): BelongsTo
+    {
+        return $this->belongsTo(CatMhDepartamento::class, 'cat_mh_departamento_id');
+    }
+
+    public function municipio(): BelongsTo
+    {
+        return $this->belongsTo(CatMhMunicipio::class, 'cat_mh_municipio_id');
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────────────

@@ -52,6 +52,7 @@ class UserController extends Controller
             'company_id' => $request->company_id,
             'branch_id'  => $request->branch_id,
             'is_active'  => $request->input('is_active', true),
+            'job_type'   => $request->job_type,
         ]);
 
         return response()->json([
@@ -79,7 +80,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $data = $request->only(['name', 'email', 'role', 'company_id', 'branch_id', 'is_active']);
+        $data = $request->only(['name', 'email', 'role', 'company_id', 'branch_id', 'is_active', 'job_type']);
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
@@ -159,6 +160,7 @@ class UserController extends Controller
             'company_id' => $company->id,
             'branch_id'  => $request->branch_id,
             'is_active'  => $request->input('is_active', true),
+            'job_type'   => $request->job_type,
         ]);
 
         return response()->json([

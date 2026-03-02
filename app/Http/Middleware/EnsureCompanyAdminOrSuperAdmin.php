@@ -18,6 +18,19 @@ class EnsureCompanyAdminOrSuperAdmin
             ], 403);
         }
 
+        // If company_admin, enforce that the route company matches the user's company_id.
+        // super_admin can access any company.
+        if ($user->isCompanyAdmin()) {
+            $routeCompany = $request->route('company'); // can be ID or model (route model binding)
+            $routeCompanyId = is_object($routeCompany) ? ($routeCompany->id ?? null) : $routeCompany;
+
+            if ($routeCompanyId && (int) $routeCompanyId !== (int) $user->company_id) {
+                return response()->json([
+                    'message' => 'Forbidden. You do not have access to this company.',
+                ], 403);
+            }
+        }
+
         return $next($request);
     }
 }

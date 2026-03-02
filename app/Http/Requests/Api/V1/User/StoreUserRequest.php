@@ -21,6 +21,7 @@ class StoreUserRequest extends FormRequest
             'company_id' => ['nullable', 'integer', 'exists:companies,id'],
             'branch_id'  => ['nullable', 'integer', 'exists:branches,id'],
             'is_active'  => ['boolean'],
+            'job_type'   => ['nullable', 'string', 'in:kitchen,waiter'],
         ];
     }
 

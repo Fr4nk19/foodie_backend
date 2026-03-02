@@ -15,7 +15,7 @@ class BranchController extends Controller
      * GET /api/v1/companies/{company}/branches
      *
      * List all branches of a company.
-     * Requires: auth:sanctum + super_admin role.
+     * Requires: auth:sanctum + company_admin_or_super.
      */
     public function index(Company $company): JsonResponse
     {
@@ -23,6 +23,21 @@ class BranchController extends Controller
 
         return response()->json([
             'data' => BranchResource::collection($branches),
+        ]);
+    }
+
+    /**
+     * GET /api/v1/companies/{company}/branches/{branch}
+     *
+     * Show a single branch of a company.
+     * Requires: auth:sanctum + company_admin_or_super.
+     */
+    public function show(Company $company, Branch $branch): JsonResponse
+    {
+        abort_if((int) $branch->company_id !== (int) $company->id, 404);
+
+        return response()->json([
+            'data' => new BranchResource($branch),
         ]);
     }
 
@@ -35,16 +50,18 @@ class BranchController extends Controller
     public function store(Request $request, Company $company): JsonResponse
     {
         $validated = $request->validate([
-            'name'       => ['required', 'string', 'max:255'],
-            'address'    => ['nullable', 'string', 'max:500'],
-            'city'       => ['nullable', 'string', 'max:100'],
-            'state'      => ['nullable', 'string', 'max:100'],
-            'phone'      => ['nullable', 'string', 'max:30'],
-            'email'      => ['nullable', 'string', 'email', 'max:255'],
-            'latitude'   => ['nullable', 'numeric'],
-            'longitude'  => ['nullable', 'numeric'],
-            'is_default' => ['nullable', 'boolean'],
-            'status'     => ['nullable', 'string', 'in:active,inactive'],
+            'name'                   => ['required', 'string', 'max:255'],
+            'address'                => ['nullable', 'string', 'max:500'],
+            'city'                   => ['nullable', 'string', 'max:100'],
+            'state'                  => ['nullable', 'string', 'max:100'],
+            'cat_mh_departamento_id' => ['nullable', 'integer', 'exists:cat_mh_departamento,id'],
+            'cat_mh_municipio_id'    => ['nullable', 'integer', 'exists:cat_mh_municipio,id'],
+            'phone'                  => ['nullable', 'string', 'max:30'],
+            'email'                  => ['nullable', 'string', 'email', 'max:255'],
+            'latitude'               => ['nullable', 'numeric'],
+            'longitude'              => ['nullable', 'numeric'],
+            'is_default'             => ['nullable', 'boolean'],
+            'status'                 => ['nullable', 'string', 'in:active,inactive'],
         ]);
 
         // Si se marca como default, desmarcar las demás
@@ -75,16 +92,18 @@ class BranchController extends Controller
         abort_if((int) $branch->company_id !== (int) $company->id, 404);
 
         $validated = $request->validate([
-            'name'       => ['sometimes', 'required', 'string', 'max:255'],
-            'address'    => ['nullable', 'string', 'max:500'],
-            'city'       => ['nullable', 'string', 'max:100'],
-            'state'      => ['nullable', 'string', 'max:100'],
-            'phone'      => ['nullable', 'string', 'max:30'],
-            'email'      => ['nullable', 'string', 'email', 'max:255'],
-            'latitude'   => ['nullable', 'numeric'],
-            'longitude'  => ['nullable', 'numeric'],
-            'is_default' => ['nullable', 'boolean'],
-            'status'     => ['nullable', 'string', 'in:active,inactive'],
+            'name'                   => ['sometimes', 'required', 'string', 'max:255'],
+            'address'                => ['nullable', 'string', 'max:500'],
+            'city'                   => ['nullable', 'string', 'max:100'],
+            'state'                  => ['nullable', 'string', 'max:100'],
+            'cat_mh_departamento_id' => ['nullable', 'integer', 'exists:cat_mh_departamento,id'],
+            'cat_mh_municipio_id'    => ['nullable', 'integer', 'exists:cat_mh_municipio,id'],
+            'phone'                  => ['nullable', 'string', 'max:30'],
+            'email'                  => ['nullable', 'string', 'email', 'max:255'],
+            'latitude'               => ['nullable', 'numeric'],
+            'longitude'              => ['nullable', 'numeric'],
+            'is_default'             => ['nullable', 'boolean'],
+            'status'                 => ['nullable', 'string', 'in:active,inactive'],
         ]);
 
         // Si se marca como default, desmarcar las demás

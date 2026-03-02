@@ -31,6 +31,7 @@ class UpdateUserRequest extends FormRequest
             'company_id' => ['sometimes', 'nullable', 'integer', 'exists:companies,id'],
             'branch_id'  => ['sometimes', 'nullable', 'integer', 'exists:branches,id'],
             'is_active'  => ['sometimes', 'boolean'],
+            'job_type'   => ['sometimes', 'nullable', 'string', 'in:kitchen,waiter'],
         ];
     }
 

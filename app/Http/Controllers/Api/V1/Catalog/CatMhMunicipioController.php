@@ -8,18 +8,25 @@ use App\Http\Requests\Api\V1\Catalog\UpdateCatMhMunicipioRequest;
 use App\Http\Resources\Api\V1\CatMhMunicipioResource;
 use App\Models\CatMhMunicipio;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CatMhMunicipioController extends Controller
 {
     /**
      * GET /api/v1/catalog/municipios
      *
-     * List all municipios.
+     * List municipios, optionally filtered by departamento_id.
      * Requires: auth:sanctum
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $items = CatMhMunicipio::orderBy('codigo')->get();
+        $query = CatMhMunicipio::with('departamento')->orderBy('codigo');
+
+        if ($request->filled('departamento_id')) {
+            $query->where('cat_mh_departamento_id', $request->integer('departamento_id'));
+        }
+
+        $items = $query->get();
 
         return response()->json([
             'data' => CatMhMunicipioResource::collection($items),
@@ -35,6 +42,7 @@ class CatMhMunicipioController extends Controller
     public function store(StoreCatMhMunicipioRequest $request): JsonResponse
     {
         $item = CatMhMunicipio::create($request->validated());
+        $item->load('departamento');
 
         return response()->json([
             'message' => 'Municipio creado exitosamente.',
@@ -51,6 +59,7 @@ class CatMhMunicipioController extends Controller
     public function update(UpdateCatMhMunicipioRequest $request, CatMhMunicipio $municipio): JsonResponse
     {
         $municipio->update($request->validated());
+        $municipio->load('departamento');
 
         return response()->json([
             'message' => 'Municipio actualizado exitosamente.',
