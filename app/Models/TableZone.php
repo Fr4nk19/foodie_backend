@@ -8,26 +8,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Table extends Model
+class TableZone extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'branch_id',
-        'table_zone_id',
-        'number',
-        'capacity',
-        'zone',
+        'name',
+        'description',
         'status',
+        'sort_order',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'number'   => 'integer',
-            'capacity' => 'integer',
-        ];
-    }
 
     // ─── Relationships ────────────────────────────────────────────────────────
 
@@ -36,20 +27,15 @@ class Table extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    public function tableZone(): BelongsTo
+    public function tables(): HasMany
     {
-        return $this->belongsTo(TableZone::class);
+        return $this->hasMany(Table::class);
     }
 
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
+    // ─── Helpers ─────────────────────────────────────────────────────────────
 
-    public function activeOrder()
+    public function isActive(): bool
     {
-        return $this->hasOne(Order::class)
-            ->whereNotIn('status', ['delivered', 'cancelled'])
-            ->latest();
+        return $this->status === 'active';
     }
 }

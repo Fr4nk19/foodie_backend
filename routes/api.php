@@ -14,7 +14,9 @@ use App\Http\Controllers\Api\V1\ProductCategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\TableController;
+use App\Http\Controllers\Api\V1\TableZoneController;
 use App\Http\Controllers\Api\V1\OrderController;
+use App\Http\Controllers\Api\V1\KitchenController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -442,6 +444,47 @@ Route::prefix('v1')->group(function () {
 
              // DELETE /api/v1/companies/{company}/branches/{branch}/orders/{order}
              Route::delete('/{order}', [OrderController::class, 'destroy'])->name('destroy');
+         });
+
+    // ── Zonas de mesas por sucursal (autenticados) ────────────────────────
+    Route::middleware(['auth:sanctum'])
+         ->prefix('companies/{company}/branches/{branch}/zones')
+         ->name('companies.branches.zones.')
+         ->group(function () {
+
+             // GET    /api/v1/companies/{company}/branches/{branch}/zones
+             Route::get('/', [TableZoneController::class, 'index'])->name('index');
+
+             // GET    /api/v1/companies/{company}/branches/{branch}/zones/{zone}
+             Route::get('/{zone}', [TableZoneController::class, 'show'])->name('show');
+
+             // POST   /api/v1/companies/{company}/branches/{branch}/zones
+             Route::post('/', [TableZoneController::class, 'store'])->name('store');
+
+             // PUT    /api/v1/companies/{company}/branches/{branch}/zones/{zone}
+             Route::put('/{zone}', [TableZoneController::class, 'update'])->name('update');
+
+             // DELETE /api/v1/companies/{company}/branches/{branch}/zones/{zone}
+             Route::delete('/{zone}', [TableZoneController::class, 'destroy'])->name('destroy');
+         });
+
+    // ── Módulo de Cocina por sucursal (autenticados) ───────────────────────
+    Route::middleware(['auth:sanctum'])
+         ->prefix('companies/{company}/branches/{branch}/kitchen')
+         ->name('companies.branches.kitchen.')
+         ->group(function () {
+
+             // GET   /api/v1/companies/{company}/branches/{branch}/kitchen/orders
+             Route::get('/orders', [KitchenController::class, 'orders'])->name('orders');
+
+             // PATCH /api/v1/companies/{company}/branches/{branch}/kitchen/orders/{order}/status
+             Route::patch('/orders/{order}/status', [KitchenController::class, 'updateOrderStatus'])->name('orders.status');
+
+             // PATCH /api/v1/companies/{company}/branches/{branch}/kitchen/orders/{order}/items/{item}/toggle
+             Route::patch('/orders/{order}/items/{item}/toggle', [KitchenController::class, 'toggleItem'])->name('orders.items.toggle');
+
+             // GET   /api/v1/companies/{company}/branches/{branch}/kitchen/stats
+             Route::get('/stats', [KitchenController::class, 'stats'])->name('stats');
          });
 
     // ── Dashboard por sucursal (autenticados) ──────────────────────────────
