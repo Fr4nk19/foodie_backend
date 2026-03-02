@@ -17,10 +17,11 @@ class UpdateTableRequest extends FormRequest
         $tableId  = $this->route('table')?->id;
 
         return [
-            'number'   => ['sometimes', 'required', 'integer', 'min:1', "unique:tables,number,{$tableId},id,branch_id,{$branchId},deleted_at,NULL"],
-            'capacity' => ['sometimes', 'required', 'integer', 'min:1', 'max:50'],
-            'zone'     => ['sometimes', 'required', 'string', 'max:100'],
-            'status'   => ['sometimes', 'string', 'in:available,occupied,reserved,cleaning'],
+            'number'        => ['sometimes', 'required', 'integer', 'min:1', "unique:tables,number,{$tableId},id,branch_id,{$branchId},deleted_at,NULL"],
+            'capacity'      => ['sometimes', 'required', 'integer', 'min:1', 'max:50'],
+            'zone'          => ['sometimes', 'nullable', 'string', 'max:100'],
+            'table_zone_id' => ['sometimes', 'nullable', 'integer', 'exists:table_zones,id'],
+            'status'        => ['sometimes', 'string', 'in:available,occupied,reserved,cleaning'],
         ];
     }
 
