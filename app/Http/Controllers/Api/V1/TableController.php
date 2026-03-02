@@ -21,11 +21,15 @@ class TableController extends Controller
     {
         abort_if($branch->company_id !== $company->id, 404);
 
-        $query = Table::with(['activeOrder.items'])
+        $query = Table::with(['activeOrder.items', 'tableZone'])
             ->where('branch_id', $branch->id);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        if ($request->filled('table_zone_id')) {
+            $query->where('table_zone_id', $request->table_zone_id);
         }
 
         $tables = $query->orderBy('zone')->orderBy('number')->get();
@@ -44,7 +48,7 @@ class TableController extends Controller
         abort_if($table->branch_id !== $branch->id, 404);
 
         return response()->json([
-            'data' => new TableResource($table->load(['activeOrder.items'])),
+            'data' => new TableResource($table->load(['activeOrder.items', 'tableZone'])),
         ]);
     }
 
@@ -55,14 +59,19 @@ class TableController extends Controller
     {
         abort_if($branch->company_id !== $company->id, 404);
 
-        $table = Table::create(array_merge(
-            $request->validated(),
-            ['branch_id' => $branch->id]
-        ));
+        $data = array_merge($request->validated(), ['branch_id' => $branch->id]);
+
+        // Auto-populate zone string from the linked TableZone name when not provided
+        if (! empty($data['table_zone_id']) && empty($data['zone'])) {
+            $zone = \App\Models\TableZone::find($data['table_zone_id']);
+            $data['zone'] = $zone?->name ?? '';
+        }
+
+        $table = Table::create($data);
 
         return response()->json([
             'message' => 'Mesa creada exitosamente.',
-            'data'    => new TableResource($table),
+            'data'    => new TableResource($table->load('tableZone')),
         ], 201);
     }
 
@@ -78,7 +87,7 @@ class TableController extends Controller
 
         return response()->json([
             'message' => 'Mesa actualizada exitosamente.',
-            'data'    => new TableResource($table->fresh()->load(['activeOrder.items'])),
+            'data'    => new TableResource($table->fresh()->load(['activeOrder.items', 'tableZone'])),
         ]);
     }
 
