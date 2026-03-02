@@ -61,6 +61,11 @@ class Branch extends Model
         return $this->hasMany(Table::class);
     }
 
+    public function tableZones(): HasMany
+    {
+        return $this->hasMany(TableZone::class);
+    }
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
